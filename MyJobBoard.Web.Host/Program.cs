@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add db context
 builder.Services.AddDbContext<MyJobBoardBusinessDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyJobBoardDatabase")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
 
 
 // Cookie settings
