@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MyJobBoard.Domain.Entities;
+using System;
 using System.Text.Json;
 
 public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
@@ -23,7 +24,8 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
         if (!optionsBuilder.IsConfigured)
         {
 
-            string? connectionString = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+            /*string? connectionString = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");*/
+            string? connectionString = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
             if (connectionString is null)
                 throw new ApplicationException("Database connection strings are missing");
 
