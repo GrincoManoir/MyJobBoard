@@ -23,7 +23,6 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
         {
 
             string? connectionString = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-            
             if (connectionString is null)
                 throw new ApplicationException("Database connection strings are missing");
 
