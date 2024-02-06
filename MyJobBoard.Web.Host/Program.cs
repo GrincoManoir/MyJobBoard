@@ -15,12 +15,9 @@ using System.Text.Json.Serialization;
 const string SWAGGER_BASE_DEFINITION_NAME = "myjobboard";
 var builder = WebApplication.CreateBuilder(args);
 
-/*// Add db context
-builder.Services.AddDbContext<MyJobBoardBusinessDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));*/
 // Add db context
 builder.Services.AddDbContext<MyJobBoardBusinessDbContext>(options =>
-    options.UseSqlServer(Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
 
 // Cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
