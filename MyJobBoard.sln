@@ -17,11 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyJobBoard.Infrastructure",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyJobBoard.Web.Common", "MyJobBoard.Web.Common\MyJobBoard.Web.Common.csproj", "{5945B3E0-4586-496C-A31E-FC401E6F7D01}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{EDCD58F4-BB57-4129-954E-B4C47BF02671}"
-	ProjectSection(SolutionItems) = preProject
-		test.html = test.html
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
