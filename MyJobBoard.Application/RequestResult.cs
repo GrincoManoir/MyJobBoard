@@ -55,7 +55,6 @@ namespace MyJobBoard.Application
     {
         OK,
         PARTIAL,
-        CREATED,
         BAD_REQUEST,
         NOT_FOUND,
         CONFLICT,

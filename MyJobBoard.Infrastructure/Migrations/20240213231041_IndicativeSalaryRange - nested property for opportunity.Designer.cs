@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MyJobBoard.Infrastructure.Migrations
 {
     [DbContext(typeof(MyJobBoardBusinessDbContext))]
-    partial class MyJobBoardBusinessDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240213231041_IndicativeSalaryRange - nested property for opportunity")]
+    partial class IndicativeSalaryRangenestedpropertyforopportunity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

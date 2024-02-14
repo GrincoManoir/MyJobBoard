@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MyJobBoard.Infrastructure.Migrations
 {
     [DbContext(typeof(MyJobBoardBusinessDbContext))]
-    partial class MyJobBoardBusinessDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240213224411_add pk for IndicativeSalaryRange")]
+    partial class addpkforIndicativeSalaryRange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -281,6 +284,32 @@ namespace MyJobBoard.Infrastructure.Migrations
                     b.ToTable("Documents");
                 });
 
+            modelBuilder.Entity("MyJobBoard.Domain.Entities.IndicativeSalaryRange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MaxSalary")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinSalary")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("OpportunityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Periodicity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OpportunityId")
+                        .IsUnique();
+
+                    b.ToTable("IndicativeSalaryRange");
+                });
+
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Interlocutor", b =>
                 {
                     b.Property<Guid>("Id")
@@ -458,6 +487,15 @@ namespace MyJobBoard.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MyJobBoard.Domain.Entities.IndicativeSalaryRange", b =>
+                {
+                    b.HasOne("MyJobBoard.Domain.Entities.Opportunity", null)
+                        .WithOne("IndicativeSalaryRange")
+                        .HasForeignKey("MyJobBoard.Domain.Entities.IndicativeSalaryRange", "OpportunityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Interlocutor", b =>
                 {
                     b.HasOne("MyJobBoard.Domain.Entities.Opportunity", "Opportunity")
@@ -479,31 +517,7 @@ namespace MyJobBoard.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("MyJobBoard.Domain.Entities.IndicativeSalaryRange", "IndicativeSalaryRange", b1 =>
-                        {
-                            b1.Property<Guid>("OpportunityId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("MaxSalary")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("MinSalary")
-                                .HasColumnType("int");
-
-                            b1.Property<int>("Periodicity")
-                                .HasColumnType("int");
-
-                            b1.HasKey("OpportunityId");
-
-                            b1.ToTable("Opportunities");
-
-                            b1.WithOwner()
-                                .HasForeignKey("OpportunityId");
-                        });
-
                     b.Navigation("Company");
-
-                    b.Navigation("IndicativeSalaryRange");
 
                     b.Navigation("User");
                 });
@@ -521,6 +535,8 @@ namespace MyJobBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Opportunity", b =>
                 {
+                    b.Navigation("IndicativeSalaryRange");
+
                     b.Navigation("Interlocutors");
 
                     b.Navigation("OpportunitySteps");

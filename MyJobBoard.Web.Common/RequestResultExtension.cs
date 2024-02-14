@@ -11,14 +11,10 @@ namespace MyJobBoard.Web.Common
 {
     public static class RequestResultExtension
     {
-        public static ActionResult MapRequestResult<TData,TDto>(this RequestResult<TData> requestResult, TDto? successDto, string actionName = "")
+        public static ActionResult MapRequestResult<TData,TDto>(this RequestResult<TData> requestResult, TDto? successDto)
         {
             if (requestResult.IsSuccess)
             {
-                if (requestResult.ApplicationResult == ApplicationResult.CREATED)
-                {
-                    return new CreatedResult(actionName, successDto);
-                }
 
                 if(requestResult.ApplicationResult == ApplicationResult.NO_CONTENT)
                 {

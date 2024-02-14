@@ -18,6 +18,7 @@ namespace MyJobBoard.Application.Services.Injector
         public static void AddBusinessServices(this IServiceCollection servicesCollection)
         {
             servicesCollection.AddScoped<IDocumentService, DocumentService>()
+                .AddScoped<IOpportunityService, OpportunityService>()
                 .AddScoped<IUserService, UserService>()
                 .AddSingleton<ITokenService,TokenService>();
         }

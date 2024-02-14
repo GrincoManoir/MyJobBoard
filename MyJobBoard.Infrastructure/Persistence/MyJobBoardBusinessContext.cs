@@ -16,6 +16,10 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Document> Documents { get; set; }
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<Interlocutor> Interlocutors { get; set; }
+    public DbSet<Opportunity> Opportunities { get; set; }
+    public DbSet<OpportunityStep> OpportunitySteps { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -37,5 +41,17 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Document>()
                .Property(doc => doc.Content)
                .Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
+
+        modelBuilder.Entity<Company>()
+            .Property(c=> c.Websites)
+            .HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+        modelBuilder.Entity<Company>()
+            .Property(c => c.SocialNetworks)
+            .HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
     }
 }

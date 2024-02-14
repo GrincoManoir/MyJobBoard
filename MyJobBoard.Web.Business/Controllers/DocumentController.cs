@@ -1,23 +1,19 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyJobBoard.Application;
+using MyJobBoard.Application.Features.Documents.Commands;
 using MyJobBoard.Application.Features.Documents.Queries;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 using MyJobBoard.Application.Features.Documents.Queries.MyJobBoard.Application.Features.Documents.Queries;
+using MyJobBoard.Domain.Entities;
+using MyJobBoard.Domain.Enums;
 using MyJobBoard.Web.Business.DTO;
 using MyJobBoard.Web.Business.DTO.Inputs;
-using MyJobBoard.Application;
-using Microsoft.AspNetCore.Http;
-using MyJobBoard.Application.Features.Documents.Commands;
-using System.Security.Claims;
+using MyJobBoard.Web.Common;
 using MyJobBoard.Web.Common.Dto;
 using System.Net;
-using MyJobBoard.Domain.Enums;
-using MyJobBoard.Web.Common;
-using MyJobBoard.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 /// <summary>
 /// 

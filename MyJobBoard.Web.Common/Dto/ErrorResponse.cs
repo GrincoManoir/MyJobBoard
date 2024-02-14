@@ -9,5 +9,9 @@ namespace MyJobBoard.Web.Common.Dto
     public class ErrorResponse
     {
         public List<string> Errors { get; set; }
+        public ErrorResponse(params string[] errors)
+        {
+            Errors = [.. errors];
+        }
     }
 }
