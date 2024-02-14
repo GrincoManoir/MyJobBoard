@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MyJobBoard.Infrastructure.Migrations
 {
     [DbContext(typeof(MyJobBoardBusinessDbContext))]
-    [Migration("20240213231041_IndicativeSalaryRange - nested property for opportunity")]
-    partial class IndicativeSalaryRangenestedpropertyforopportunity
+    [Migration("20240214105039_Initial Create")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
