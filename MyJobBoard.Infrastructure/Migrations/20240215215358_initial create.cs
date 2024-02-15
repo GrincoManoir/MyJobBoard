@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyJobBoard.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialcreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -201,6 +201,29 @@ namespace MyJobBoard.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Interlocutors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LinkedinProfile = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Interlocutors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Interlocutors_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Opportunities",
                 columns: table => new
                 {
@@ -235,22 +258,23 @@ namespace MyJobBoard.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Interlocutors",
+                name: "OpportunityInterlocutors",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LinkedinProfile = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OpportunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    OpportunityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InterlocutorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Interlocutors", x => x.Id);
+                    table.PrimaryKey("PK_OpportunityInterlocutors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Interlocutors_Opportunities_OpportunityId",
+                        name: "FK_OpportunityInterlocutors_Interlocutors_InterlocutorId",
+                        column: x => x.InterlocutorId,
+                        principalTable: "Interlocutors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OpportunityInterlocutors_Opportunities_OpportunityId",
                         column: x => x.OpportunityId,
                         principalTable: "Opportunities",
                         principalColumn: "Id");
@@ -328,9 +352,9 @@ namespace MyJobBoard.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Interlocutors_OpportunityId",
+                name: "IX_Interlocutors_UserId",
                 table: "Interlocutors",
-                column: "OpportunityId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Opportunities_CompanyId",
@@ -341,6 +365,16 @@ namespace MyJobBoard.Infrastructure.Migrations
                 name: "IX_Opportunities_UserId",
                 table: "Opportunities",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OpportunityInterlocutors_InterlocutorId",
+                table: "OpportunityInterlocutors",
+                column: "InterlocutorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OpportunityInterlocutors_OpportunityId",
+                table: "OpportunityInterlocutors",
+                column: "OpportunityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OpportunitySteps_OpportunityId",
@@ -370,13 +404,16 @@ namespace MyJobBoard.Infrastructure.Migrations
                 name: "Documents");
 
             migrationBuilder.DropTable(
-                name: "Interlocutors");
+                name: "OpportunityInterlocutors");
 
             migrationBuilder.DropTable(
                 name: "OpportunitySteps");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Interlocutors");
 
             migrationBuilder.DropTable(
                 name: "Opportunities");

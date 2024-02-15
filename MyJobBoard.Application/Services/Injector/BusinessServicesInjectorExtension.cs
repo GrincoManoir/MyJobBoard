@@ -19,6 +19,9 @@ namespace MyJobBoard.Application.Services.Injector
         {
             servicesCollection.AddScoped<IDocumentService, DocumentService>()
                 .AddScoped<IOpportunityService, OpportunityService>()
+                .AddScoped<ICompanyService, CompanyService>()
+                .AddScoped<IInterlocutorService, InterlocutorService>()
+                .AddScoped<IOpportunityStepService, OpportunityStepService>()
                 .AddScoped<IUserService, UserService>()
                 .AddSingleton<ITokenService,TokenService>();
         }

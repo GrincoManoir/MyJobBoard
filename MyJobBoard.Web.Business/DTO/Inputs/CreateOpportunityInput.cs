@@ -17,6 +17,7 @@ namespace MyJobBoard.Web.Business.DTO.Inputs
         public string? Industry { get; set; }
         public IndicativeSalaryRangeInPut? IndicativeSalaryRange { get; set; }
         public string? FreeNotes { get; set; }
+        public Guid? InterlocutorId { get; set; } 
 
         public class IndicativeSalaryRangeInPut
         {

@@ -23,7 +23,9 @@ public class OpportunityRepository : GenericRepository<Opportunity>, IOpportunit
         {
             opportunityQuery = opportunityQuery.Where(d => d.StartDate >= startDate);
         }
-        opportunityQuery = opportunityQuery.Include(o => o.Company);
+        opportunityQuery = opportunityQuery.Include(o => o.Company)
+            .Include(o => o.Interlocutors)
+            .Include(o => o.OpportunitySteps);
         
         return  await opportunityQuery.AsNoTracking().ToListAsync();
     }
@@ -31,7 +33,10 @@ public class OpportunityRepository : GenericRepository<Opportunity>, IOpportunit
 
     public async Task<Opportunity?> GetOpportunityById(Guid opportunityId)
     {
-        var opportunity =  await _context.Opportunities.SingleOrDefaultAsync(c => c.Id == opportunityId);
+        var opportunity =  await _context.Opportunities
+            .Include(o => o.Interlocutors)
+            .Include(o => o.OpportunitySteps)
+            .SingleOrDefaultAsync(c => c.Id == opportunityId);
         if (opportunity != null)
         {
             await _context.Entry(opportunity)
@@ -53,12 +58,12 @@ public class OpportunityRepository : GenericRepository<Opportunity>, IOpportunit
         await _context.Entry(opportunity)
             .Reference(o => o.Company)
             .LoadAsync();
-            
     }
 
     public async Task DeleteOpportunity(Guid opportunityId)
     {
-        _ = await _context.Opportunities.Where(d => d.Id == opportunityId).ExecuteDeleteAsync();
+        await OnOpportunityDelete(opportunityId);
+        await _context.Opportunities.Where(d => d.Id == opportunityId).ForEachAsync(d => _context.Opportunities.Remove(d));
         await _context.SaveChangesAsync();
     }
 
@@ -69,5 +74,10 @@ public class OpportunityRepository : GenericRepository<Opportunity>, IOpportunit
         await _context.Entry(opportunity)
            .Reference(o => o.Company)
            .LoadAsync();
+    }
+
+    private async Task OnOpportunityDelete(Guid opportunityId)
+    {
+        await _context.OpportunityInterlocutors.Where(io => io.OpportunityId == opportunityId).ForEachAsync(io=> _context.Remove(io));
     }
 }

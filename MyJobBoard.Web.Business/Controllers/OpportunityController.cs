@@ -33,7 +33,7 @@ namespace MyJobBoard.Web.Business.Controllers
         [HttpGet()]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.PartialContent, Type = typeof(PartialResponse<IEnumerable<DocumentDto>>))]
+        [ProducesResponseType((int)HttpStatusCode.PartialContent, Type = typeof(PartialResponse<IEnumerable<OpportunityDto>>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(Response<IEnumerable<OpportunityDto>>))]
         public async Task<ActionResult> GetOpportunities([FromQuery] GetOpportunitiesQueryInputs query)
@@ -51,7 +51,7 @@ namespace MyJobBoard.Web.Business.Controllers
         [HttpPost()]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NoContent, Type = typeof(Response<IEnumerable<OpportunityDto>>))]
-        [ProducesResponseType((int)HttpStatusCode.PartialContent, Type = typeof(PartialResponse<IEnumerable<DocumentDto>>))]
+        [ProducesResponseType((int)HttpStatusCode.PartialContent, Type = typeof(PartialResponse<IEnumerable<OpportunityDto>>))]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
         public async Task<ActionResult> CreateOpportunity([FromBody] CreateOpportunityInput query)
@@ -71,7 +71,8 @@ namespace MyJobBoard.Web.Business.Controllers
                    MaxSalary = query.IndicativeSalaryRange.MaxSalary,
                    Periodicity = query.IndicativeSalaryRange.Periodicity
                 },
-                query.FreeNotes
+                query.FreeNotes,
+                query.InterlocutorId
                 ));
             return result.MapRequestResult(successDto: result.Data == null ? null : new OpportunityDto(result.Data));
         }
@@ -118,23 +119,72 @@ namespace MyJobBoard.Web.Business.Controllers
         /// mise à jour d'une opportunité
         /// </summary>
         /// <returns></returns>
-        [HttpPut()]
+        [HttpPut("{id}")]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
-        public async Task<ActionResult> UpdateOpportunity([FromBody] UpdateOpportunityInput input)
+        public async Task<ActionResult> UpdateOpportunity([FromRoute] Guid id,[FromBody] UpdateOpportunityInput input)
         {
             RequestResult<Opportunity> result;
             try
             {
-                result = await _mediator.Send(input.ToUpdateOpportunityCommand());
+                result = await _mediator.Send(input.toBusinessCommand(id));
             }
             catch (Exception e)
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
            
+            return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
+        }
+
+
+        /// <summary>
+        /// Ajoute un interlocutor à une opportunité
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}/interlocutors/{interlocutorId}")]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
+        public async Task<ActionResult> AddInterlocutor([FromRoute] Guid id, [FromRoute] Guid interlocutorId)
+        {
+            RequestResult<Opportunity> result;
+            try
+            {
+                result = await _mediator.Send(new OpportunityAddInterlocutorCommand(id,interlocutorId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ErrorResponse(e.Message));
+            }
+
+            return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
+        }
+
+        /// <summary>
+        /// Ajoute un interlocutor à une opportunité
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}/interlocutors/{interlocutorId}")]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
+        public async Task<ActionResult> RemoveInterlocutor([FromRoute] Guid id, [FromRoute] Guid interlocutorId)
+        {
+            RequestResult<Opportunity> result;
+            try
+            {
+                result = await _mediator.Send(new OpportunityRemoveInterlocutorCommand(id, interlocutorId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new ErrorResponse(e.Message));
+            }
+
             return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
         }
     }

@@ -22,6 +22,9 @@ namespace MyJobBoard.Infrastructure.Persistence.Repositories.Injector
         {
             serviceCollection.AddScoped<IDocumentRepository, DocumentRepository>()
                 .AddScoped<IOpportunityRepository, OpportunityRepository>()
+                .AddScoped<ICompanyRepository, CompanyRepository>()
+                .AddScoped<IInterlocutorRepository, InterlocutorRepository>()
+                .AddScoped<IOpportunityStepRepository, OpportunityStepRepository>()
                 .AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         }
     }

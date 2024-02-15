@@ -15,12 +15,17 @@ namespace MyJobBoard.Domain.Entities
         public RemoteCondition? RemoteCondition { get; set; }
         public string? Industry { get; set; }
         public Guid? CompanyId { get; set; }
-        public Company? Company { get; set; }
-        public ICollection<Interlocutor> Interlocutors { get; set; }
+        
         public DateTime StartDate { get; set; }
         public DateTime LastUpdateDate { get; set; }
         public OpportunityState State { get; set; }
+        
+
+        // Navigation properties
+        public Company? Company { get; set; }
         public ICollection<OpportunityStep> OpportunitySteps { get; set; }
+
+        public ICollection<Interlocutor>? Interlocutors { get; set; }
 
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }

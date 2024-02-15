@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyJobBoard.Application.Features.Companies.Commands;
 using MyJobBoard.Application.Features.Opportunities.Commands;
 using MyJobBoard.Domain.Entities;
 using MyJobBoard.Domain.Enums;
@@ -13,7 +14,6 @@ namespace MyJobBoard.Web.Business.DTO.Inputs
 {
     public class UpdateOpportunityInput
     {
-        public Guid Id { get; set; }
         public string RoleTitle { get; set; }
         public IndicativeSalaryRangeInput? IndicativeSalaryRange { get; set; }
         public string? Location { get; set; }
@@ -33,11 +33,11 @@ namespace MyJobBoard.Web.Business.DTO.Inputs
 
     public static class UpdateOpportunityInputExtensions
     {
-        public static UpdateOpportunityCommand ToUpdateOpportunityCommand(this UpdateOpportunityInput input)
+        public static UpdateOpportunityCommand toBusinessCommand(this UpdateOpportunityInput input, Guid id)
         {
             return new UpdateOpportunityCommand
             {
-                Id = input.Id,
+                Id = id,
                 RoleTitle = input.RoleTitle,
                 IndicativeSalaryRange = input.IndicativeSalaryRange == null ? null : new() {MaxSalary = input.IndicativeSalaryRange.MaxSalary, MinSalary = input.IndicativeSalaryRange.MaxSalary, Periodicity = input.IndicativeSalaryRange.Periodicity},
                 Location = input.Location,

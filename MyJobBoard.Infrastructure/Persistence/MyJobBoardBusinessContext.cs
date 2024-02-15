@@ -20,6 +20,7 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Interlocutor> Interlocutors { get; set; }
     public DbSet<Opportunity> Opportunities { get; set; }
     public DbSet<OpportunityStep> OpportunitySteps { get; set; }
+    public DbSet<OpportunityInterlocutor> OpportunityInterlocutors { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -43,7 +44,7 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
                .Metadata.SetPropertyAccessMode(PropertyAccessMode.Property);
 
         modelBuilder.Entity<Company>()
-            .Property(c=> c.Websites)
+            .Property(c => c.Websites)
             .HasConversion(
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
@@ -53,5 +54,32 @@ public class MyJobBoardBusinessDbContext : IdentityDbContext<ApplicationUser>
             .HasConversion(
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+        modelBuilder.Entity<Opportunity>()
+         .HasMany(o => o.Interlocutors)
+         .WithMany(i => i.Opportunities)
+         .UsingEntity<OpportunityInterlocutor>(
+             j =>
+             {
+                 j.HasOne(io => io.Interlocutor)
+                     .WithMany()
+                     .HasForeignKey(io => io.InterlocutorId)
+                     .OnDelete(DeleteBehavior.NoAction);
+             }
+         );
+
+        modelBuilder.Entity<Interlocutor>()
+         .HasMany(o => o.Opportunities)
+         .WithMany(i => i.Interlocutors)
+         .UsingEntity<OpportunityInterlocutor>(
+             j =>
+             {
+                 j.HasOne(io => io.Opportunity)
+                     .WithMany()
+                     .HasForeignKey(io => io.OpportunityId)
+                     .OnDelete(DeleteBehavior.NoAction);
+             }
+         );
+
     }
 }

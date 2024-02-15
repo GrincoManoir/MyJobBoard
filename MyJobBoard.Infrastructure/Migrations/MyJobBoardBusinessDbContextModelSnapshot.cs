@@ -288,7 +288,6 @@ namespace MyJobBoard.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
@@ -300,15 +299,16 @@ namespace MyJobBoard.Infrastructure.Migrations
                     b.Property<string>("LinkedinProfile")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("OpportunityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OpportunityId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Interlocutors");
                 });
@@ -355,6 +355,27 @@ namespace MyJobBoard.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Opportunities");
+                });
+
+            modelBuilder.Entity("MyJobBoard.Domain.Entities.OpportunityInterlocutor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("InterlocutorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OpportunityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterlocutorId");
+
+                    b.HasIndex("OpportunityId");
+
+                    b.ToTable("OpportunityInterlocutors");
                 });
 
             modelBuilder.Entity("MyJobBoard.Domain.Entities.OpportunityStep", b =>
@@ -460,11 +481,13 @@ namespace MyJobBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Interlocutor", b =>
                 {
-                    b.HasOne("MyJobBoard.Domain.Entities.Opportunity", "Opportunity")
-                        .WithMany("Interlocutors")
-                        .HasForeignKey("OpportunityId");
+                    b.HasOne("MyJobBoard.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Opportunity");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Opportunity", b =>
@@ -508,6 +531,25 @@ namespace MyJobBoard.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MyJobBoard.Domain.Entities.OpportunityInterlocutor", b =>
+                {
+                    b.HasOne("MyJobBoard.Domain.Entities.Interlocutor", "Interlocutor")
+                        .WithMany()
+                        .HasForeignKey("InterlocutorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MyJobBoard.Domain.Entities.Opportunity", "Opportunity")
+                        .WithMany()
+                        .HasForeignKey("OpportunityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Interlocutor");
+
+                    b.Navigation("Opportunity");
+                });
+
             modelBuilder.Entity("MyJobBoard.Domain.Entities.OpportunityStep", b =>
                 {
                     b.HasOne("MyJobBoard.Domain.Entities.Opportunity", "Opportunity")
@@ -521,8 +563,6 @@ namespace MyJobBoard.Infrastructure.Migrations
 
             modelBuilder.Entity("MyJobBoard.Domain.Entities.Opportunity", b =>
                 {
-                    b.Navigation("Interlocutors");
-
                     b.Navigation("OpportunitySteps");
                 });
 #pragma warning restore 612, 618

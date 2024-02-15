@@ -1,4 +1,5 @@
-﻿using MyJobBoard.Domain.Entities;
+﻿using MyJobBoard.Application.Services;
+using MyJobBoard.Domain.Entities;
 using MyJobBoard.Domain.Enums;
 using System;
 using System.Collections.Generic;

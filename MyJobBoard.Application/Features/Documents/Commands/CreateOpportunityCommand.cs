@@ -1,10 +1,11 @@
 ﻿using MediatR;
+using MyJobBoard.Application.Features.Interlocutors.Queries;
 using MyJobBoard.Application.Interfaces;
 using MyJobBoard.Domain.Entities;
 using MyJobBoard.Domain.Enums;
 using System.Collections.ObjectModel;
 
-namespace MyJobBoard.Application.Features.Documents.Commands
+namespace MyJobBoard.Application.Features.Opportunities.Commands
 {
     public class CreateOpportunityCommand : IRequest<RequestResult<Opportunity>>
     {
@@ -16,8 +17,9 @@ namespace MyJobBoard.Application.Features.Documents.Commands
         public string? Industry { get; set; }
         public IndicativeSalaryRange? IndicativeSalaryRange { get; set; }
         public string? FreeNotes { get; set; }
+        public Guid? InterlocutorId { get; set; }
 
-        public CreateOpportunityCommand(string userId, Guid? companyId, string? location, string roleTitle, RemoteCondition? remoteCondition, string? industry, IndicativeSalaryRange? indicativeSalaryRange, string? freeNotes)
+        public CreateOpportunityCommand(string userId, Guid? companyId, string? location, string roleTitle, RemoteCondition? remoteCondition, string? industry, IndicativeSalaryRange? indicativeSalaryRange, string? freeNotes, Guid? interlocutorId)
         {
             UserId = userId;
             CompanyId = companyId;
@@ -27,18 +29,15 @@ namespace MyJobBoard.Application.Features.Documents.Commands
             Industry = industry;
             IndicativeSalaryRange = indicativeSalaryRange;
             FreeNotes = freeNotes;
+            InterlocutorId = interlocutorId;
 
         }
     }
 
-    public class CreateOpportunityCommandHandler : IRequestHandler<CreateOpportunityCommand, RequestResult<Opportunity>>
+    public class CreateOpportunityCommandHandler(IOpportunityService opportunityService, IInterlocutorService interlocutorService) : IRequestHandler<CreateOpportunityCommand, RequestResult<Opportunity>>
     {
-        private readonly IOpportunityService _opportunityService;
-
-        public CreateOpportunityCommandHandler(IOpportunityService opportunityService)
-        {
-            _opportunityService = opportunityService;
-        }
+        private readonly IOpportunityService _opportunityService = opportunityService;
+        private readonly IInterlocutorService _interlocutorService = interlocutorService;
 
         public async Task<RequestResult<Opportunity>> Handle(CreateOpportunityCommand request, CancellationToken cancellationToken)
         {
@@ -57,7 +56,7 @@ namespace MyJobBoard.Application.Features.Documents.Commands
                 OpportunitySteps = new Collection<OpportunityStep>()
 
             };
-            if (!String.IsNullOrWhiteSpace(request.FreeNotes))
+            if (!string.IsNullOrWhiteSpace(request.FreeNotes))
             {
                 opportunity.OpportunitySteps.Add(new OpportunityStep
                 {
@@ -67,16 +66,26 @@ namespace MyJobBoard.Application.Features.Documents.Commands
                 });
             }
 
+            if(request.InterlocutorId.HasValue && Guid.Empty != request.InterlocutorId)
+            {
+                var interlocutor = await _interlocutorService.GetInterlocutorById(request.InterlocutorId.Value);
+                if(interlocutor == null)
+                {
+                    return RequestResult<Opportunity>.Failure("Interlocutor Not Found", ApplicationResult.NOT_FOUND);
+                }
+                opportunity.Interlocutors = new Collection<Interlocutor> { interlocutor };
+            }
+
             try
-            { 
-                 await _opportunityService.CreateOpportunity(opportunity);
+            {
+                await _opportunityService.CreateOpportunity(opportunity);
             }
             catch (Exception ex)
             {
                 return RequestResult<Opportunity>.Failure(ex.Message);
             }
 
-            return RequestResult<Opportunity>.Success(data : opportunity, ApplicationResult.OK);
+            return RequestResult<Opportunity>.Success(data: opportunity, ApplicationResult.OK);
         }
     }
 }

@@ -19,9 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyJobBoardBusinessDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
 
+
 // Cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
     options.SlidingExpiration = true;
@@ -51,16 +53,8 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 
-builder.Services.AddMediatR((config) =>
-{
-    config.RegisterServicesFromAssembly(typeof(GetDocumentsQuery).Assembly);
-});
-
-
-builder.Services.AddBusinessServices();
-
 builder.Services.AddMyJobBoardRepositories();
-
+builder.Services.AddBusinessServices();
 builder.Services.AddControllers()
     .AddJsonOptions(
     options =>
@@ -68,6 +62,13 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.WriteIndented = true;
     });
+builder.Services.AddMediatR((config) =>
+{
+    config.RegisterServicesFromAssembly(typeof(GetDocumentsQuery).Assembly);
+});
+
+
+
 
 
 // Swagger UI Settings
