@@ -67,9 +67,9 @@ namespace MyJobBoard.Web.Business.Controllers
                 query.Industry,
                 query.IndicativeSalaryRange == null ? null : new IndicativeSalaryRange()
                 {
-                   MinSalary = query.IndicativeSalaryRange.MinSalary,
-                   MaxSalary = query.IndicativeSalaryRange.MaxSalary,
-                   Periodicity = query.IndicativeSalaryRange.Periodicity
+                    MinSalary = query.IndicativeSalaryRange.MinSalary,
+                    MaxSalary = query.IndicativeSalaryRange.MaxSalary,
+                    Periodicity = query.IndicativeSalaryRange.Periodicity
                 },
                 query.FreeNotes,
                 query.InterlocutorId
@@ -111,8 +111,8 @@ namespace MyJobBoard.Web.Business.Controllers
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
-           
-           return NoContent();
+
+            return NoContent();
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace MyJobBoard.Web.Business.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
-        public async Task<ActionResult> UpdateOpportunity([FromRoute] Guid id,[FromBody] UpdateOpportunityInput input)
+        public async Task<ActionResult> UpdateOpportunity([FromRoute] Guid id, [FromBody] UpdateOpportunityInput input)
         {
             RequestResult<Opportunity> result;
             try
@@ -135,7 +135,7 @@ namespace MyJobBoard.Web.Business.Controllers
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
-           
+
             return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
         }
 
@@ -154,7 +154,7 @@ namespace MyJobBoard.Web.Business.Controllers
             RequestResult<Opportunity> result;
             try
             {
-                result = await _mediator.Send(new OpportunityAddInterlocutorCommand(id,interlocutorId));
+                result = await _mediator.Send(new OpportunityAddInterlocutorCommand(id, interlocutorId));
             }
             catch (Exception e)
             {
@@ -187,8 +187,57 @@ namespace MyJobBoard.Web.Business.Controllers
 
             return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
         }
+
+
+        /// <summary>
+        /// Ajoute un step à une opportunité
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("{id}/steps")]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
+        public async Task<ActionResult> CreateStep([FromRoute] Guid id, [FromBody] AddOpportunityStepInputs input)
+        {
+            RequestResult<Opportunity> result = await _mediator.Send(input.ToBusinessCommand(id));
+            return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
+        }
+
+        /// <summary>
+        /// Met à jour un step dans une opportunité
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("{id}/steps/{stepId}")]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
+        public async Task<ActionResult> UpdateStep([FromRoute] Guid id, [FromRoute] Guid stepId, [FromBody] UpdateOpportunityStepInputs input)
+        {
+            RequestResult<Opportunity> result = await _mediator.Send(input.ToBusinessCommand(id,stepId));
+            return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
+        }
+
+        /// <summary>
+        /// Supprime un step à une opportunité
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}/steps/{stepId}")]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(OpportunityDto))]
+        public async Task<ActionResult> RemoveSTep([FromRoute] Guid id, [FromRoute] Guid stepId)
+        {
+            RequestResult<Opportunity> result = await _mediator.Send(new OpportunityRemoveOpportunityStepCommand(id, stepId));
+
+            return result.MapRequestResult(successDto: result.Data != null ? new OpportunityDto(result.Data) : null);
+        }
     }
 
-    
+
+
+
 }
 
